@@ -12,8 +12,8 @@ import { SearchBar } from "@/components/navigation/SearchBar";
 import type { ProductSort } from "@/models/Product";
 
 interface ProductsSearch {
-  q?: string;
-  sort?: ProductSort;
+  q?: string | undefined;
+  sort?: ProductSort | undefined;
 }
 
 const SORTS: { value: ProductSort; label: string }[] = [
@@ -26,9 +26,9 @@ const SORTS: { value: ProductSort; label: string }[] = [
 
 export const Route = createFileRoute("/products")({
   validateSearch: (search: Record<string, unknown>): ProductsSearch => ({
-    q: typeof search.q === "string" && search.q ? search.q : undefined,
-    sort: SORTS.some((s) => s.value === search.sort)
-      ? (search.sort as ProductSort)
+    q: typeof search["q"] === "string" && search["q"] ? (search["q"] as string) : undefined,
+    sort: SORTS.some((s) => s.value === search["sort"])
+      ? (search["sort"] as ProductSort)
       : undefined,
   }),
   head: () => ({
@@ -55,7 +55,7 @@ function ProductsPage() {
 
   const products = useQuery({
     queryKey: ["products", { q, sort }],
-    queryFn: () => productsApi.filter({ search: q }, sort ?? "featured"),
+    queryFn: () => productsApi.filter(q ? { search: q } : {}, sort ?? "featured"),
   });
 
   const list = products.data ?? [];

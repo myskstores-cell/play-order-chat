@@ -21,9 +21,9 @@ export function SectionHeader({
   description,
   action,
 }: {
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   title: string;
-  description?: string;
+  description?: string | undefined;
   action?: ReactNode;
 }) {
   return (
@@ -45,9 +45,9 @@ export function PageHeader({
   title,
   description,
 }: {
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   title: string;
-  description?: string;
+  description?: string | undefined;
 }) {
   return (
     <header className="border-b border-border bg-surface">

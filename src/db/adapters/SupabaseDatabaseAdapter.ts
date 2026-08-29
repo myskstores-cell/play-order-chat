@@ -47,7 +47,7 @@ export class SupabaseDatabaseAdapter implements DatabaseAdapter {
 
     const { data, error } = await query;
     if (error) throw new DatabaseError(`Failed to load ${table}`, error);
-    return ((data ?? []) as T[]) ?? [];
+    return (data ?? []) as T[];
   }
 
   async findById<T>(table: string, id: string): Promise<T | null> {
