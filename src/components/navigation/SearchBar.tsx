@@ -19,7 +19,8 @@ export function SearchBar({
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    navigate({ to: "/products", search: { q: value.trim() || undefined } });
+    const term = value.trim();
+    navigate({ to: "/products", search: term ? { q: term } : {} });
     onSubmitted?.();
   }
 

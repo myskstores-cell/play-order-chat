@@ -6,9 +6,9 @@ const fieldClass =
 
 interface BaseProps {
   label: string;
-  error?: string;
-  hint?: string;
-  required?: boolean;
+  error?: string | undefined;
+  hint?: string | undefined;
+  required?: boolean | undefined;
 }
 
 export function Input({
