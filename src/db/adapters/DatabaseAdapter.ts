@@ -26,7 +26,7 @@ export interface DatabaseAdapter {
 export class DatabaseError extends Error {
   constructor(
     message: string,
-    readonly cause?: unknown,
+    override readonly cause?: unknown,
   ) {
     super(message);
     this.name = "DatabaseError";
