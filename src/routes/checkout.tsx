@@ -115,9 +115,8 @@ function CheckoutPage() {
                 Order on WhatsApp
               </Button>
               <p className="text-xs text-muted-foreground">
-                This opens WhatsApp with a pre-filled message. Tap send in WhatsApp —
-                your order is confirmed manually by SK Sport Store. No payment is taken
-                on this website.
+                This opens WhatsApp with a pre-filled message. Tap send in WhatsApp — your order is
+                confirmed manually by SK Sport Store. No payment is taken on this website.
               </p>
               {sent && (
                 <p role="status" className="text-xs text-primary">

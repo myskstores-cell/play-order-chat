@@ -52,8 +52,8 @@ function ContactPage() {
         <div className="surface-panel space-y-4 rounded-sm p-6 text-sm">
           <h2 className="display-title text-2xl">Order on WhatsApp</h2>
           <p className="text-muted-foreground">
-            All orders are placed and confirmed over WhatsApp. There is no online
-            payment on this website.
+            All orders are placed and confirmed over WhatsApp. There is no online payment on this
+            website.
           </p>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="whatsapp" size="lg">

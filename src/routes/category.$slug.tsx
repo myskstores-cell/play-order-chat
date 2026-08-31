@@ -3,11 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { categoriesApi } from "@/api/categoriesApi";
 import { Container, PageHeader } from "@/components/common/Section";
 import { ProductGrid } from "@/components/product/ProductCard";
-import {
-  EmptyState,
-  ErrorState,
-  ProductGridSkeleton,
-} from "@/components/common/States";
+import { EmptyState, ErrorState, ProductGridSkeleton } from "@/components/common/States";
 import { Breadcrumb } from "@/components/navigation/Breadcrumb";
 
 export const Route = createFileRoute("/category/$slug")({

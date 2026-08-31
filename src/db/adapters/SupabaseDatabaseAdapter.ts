@@ -1,9 +1,5 @@
 import { supabaseClient } from "@/db/supabase/supabaseClient";
-import {
-  DatabaseError,
-  type DatabaseAdapter,
-  type QueryOptions,
-} from "./DatabaseAdapter";
+import { DatabaseError, type DatabaseAdapter, type QueryOptions } from "./DatabaseAdapter";
 
 /**
  * The adapter works with dynamic table names, so it uses a loose view of the
@@ -51,21 +47,13 @@ export class SupabaseDatabaseAdapter implements DatabaseAdapter {
   }
 
   async findById<T>(table: string, id: string): Promise<T | null> {
-    const { data, error } = await client
-      .from(table)
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+    const { data, error } = await client.from(table).select("*").eq("id", id).maybeSingle();
     if (error) throw new DatabaseError(`Failed to load ${table} record`, error);
     return (data as T | null) ?? null;
   }
 
   async create<T>(table: string, data: Partial<T>): Promise<T> {
-    const { data: row, error } = await client
-      .from(table)
-      .insert(data)
-      .select("*")
-      .single();
+    const { data: row, error } = await client.from(table).insert(data).select("*").single();
     if (error) throw new DatabaseError(`Failed to create ${table} record`, error);
     return row as T;
   }

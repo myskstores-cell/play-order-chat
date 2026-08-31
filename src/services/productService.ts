@@ -1,11 +1,6 @@
 import { getDatabase } from "@/db/database";
 import { TABLES, type CategoryRow, type ProductRow } from "@/db/types";
-import type {
-  Product,
-  ProductFilters,
-  ProductSort,
-  StockStatus,
-} from "@/models/Product";
+import type { Product, ProductFilters, ProductSort, StockStatus } from "@/models/Product";
 import { storageService } from "./storageService";
 
 function toNumber(value: number | string | null): number | null {
@@ -14,8 +9,38 @@ function toNumber(value: number | string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function parseImages(raw: string | null | undefined): { primary: string | null; all: string[] } {
+  if (!raw) return { primary: null, all: [] };
+  let urls: string[] = [];
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        urls = parsed.filter((u): u is string => typeof u === "string" && !!u.trim());
+      }
+    } catch {
+      urls = [trimmed];
+    }
+  } else if (trimmed.includes(",")) {
+    urls = trimmed
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  } else {
+    urls = [trimmed];
+  }
+
+  const resolvedUrls = urls.map((u) => storageService.getImageUrl(u)).filter(Boolean);
+  return {
+    primary: resolvedUrls[0] || null,
+    all: resolvedUrls,
+  };
+}
+
 function toProduct(row: ProductRow, categories: Map<string, CategoryRow>): Product {
   const category = row.category_id ? categories.get(row.category_id) : undefined;
+  const { primary, all } = parseImages(row.image_url);
   return {
     id: row.id,
     categoryId: row.category_id,
@@ -28,7 +53,8 @@ function toProduct(row: ProductRow, categories: Map<string, CategoryRow>): Produ
     shortDescription: row.short_description,
     price: toNumber(row.price) ?? 0,
     compareAtPrice: toNumber(row.compare_at_price),
-    imageUrl: storageService.getImageUrl(row.image_url) || null,
+    imageUrl: primary,
+    images: all,
     size: row.size,
     brand: row.brand,
     sport: row.sport,
@@ -97,8 +123,7 @@ export function sortProducts(products: Product[], sort: ProductSort): Product[] 
     case "featured":
     default:
       return list.sort(
-        (a, b) =>
-          Number(b.isFeatured) - Number(a.isFeatured) || a.sortOrder - b.sortOrder,
+        (a, b) => Number(b.isFeatured) - Number(a.isFeatured) || a.sortOrder - b.sortOrder,
       );
   }
 }

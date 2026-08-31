@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
@@ -10,8 +11,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Staff Sign In | SK Sport Store" },
       {
         name: "description",
-        content:
-          "Sign in to the SK Sport Store staff area to manage the sports catalog.",
+        content: "Sign in to the SK Sport Store staff area to manage the sports catalog.",
       },
       { property: "og:title", content: "Staff Sign In | SK Sport Store" },
       {
@@ -29,6 +29,7 @@ function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -70,8 +71,8 @@ function AuthPage() {
         {mode === "signin" ? "Sign in" : "Create staff account"}
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        This area is for SK Sport Store staff managing the catalog. Customers can keep
-        shopping and order on WhatsApp.
+        This area is for SK Sport Store staff managing the catalog. Customers can keep shopping and
+        order on WhatsApp.
       </p>
 
       <form onSubmit={onSubmit} className="surface-panel mt-6 space-y-4 rounded-sm p-5">
@@ -83,15 +84,32 @@ function AuthPage() {
           required
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Input
-          label="Password"
-          type="password"
-          value={password}
-          autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          required
-          minLength={6}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+
+        <div className="relative">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
+            required
+            minLength={6}
+            className="pr-10"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-[34px] rounded-xs p-1 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Eye className="h-4 w-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}

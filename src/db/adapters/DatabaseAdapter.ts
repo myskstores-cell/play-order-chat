@@ -8,11 +8,7 @@ export interface QueryOptions {
 }
 
 export interface DatabaseAdapter {
-  find<T>(
-    table: string,
-    filters?: Record<string, unknown>,
-    options?: QueryOptions,
-  ): Promise<T[]>;
+  find<T>(table: string, filters?: Record<string, unknown>, options?: QueryOptions): Promise<T[]>;
 
   findById<T>(table: string, id: string): Promise<T | null>;
 

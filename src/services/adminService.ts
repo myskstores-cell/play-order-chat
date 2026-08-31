@@ -8,9 +8,7 @@ import { TABLES, type CategoryRow, type ProductRow } from "@/db/types";
  */
 
 export type ProductInput = Partial<Omit<ProductRow, "id" | "created_at" | "updated_at">>;
-export type CategoryInput = Partial<
-  Omit<CategoryRow, "id" | "created_at" | "updated_at">
->;
+export type CategoryInput = Partial<Omit<CategoryRow, "id" | "created_at" | "updated_at">>;
 
 export const adminService = {
   listProducts(): Promise<ProductRow[]> {
@@ -34,11 +32,7 @@ export const adminService = {
   },
 
   updateProduct(id: string, data: ProductInput): Promise<ProductRow> {
-    return getDatabase().update<ProductRow>(
-      TABLES.products,
-      id,
-      data as Partial<ProductRow>,
-    );
+    return getDatabase().update<ProductRow>(TABLES.products, id, data as Partial<ProductRow>);
   },
 
   deleteProduct(id: string): Promise<void> {
@@ -46,18 +40,11 @@ export const adminService = {
   },
 
   createCategory(data: CategoryInput): Promise<CategoryRow> {
-    return getDatabase().create<CategoryRow>(
-      TABLES.categories,
-      data as Partial<CategoryRow>,
-    );
+    return getDatabase().create<CategoryRow>(TABLES.categories, data as Partial<CategoryRow>);
   },
 
   updateCategory(id: string, data: CategoryInput): Promise<CategoryRow> {
-    return getDatabase().update<CategoryRow>(
-      TABLES.categories,
-      id,
-      data as Partial<CategoryRow>,
-    );
+    return getDatabase().update<CategoryRow>(TABLES.categories, id, data as Partial<CategoryRow>);
   },
 
   deleteCategory(id: string): Promise<void> {

@@ -12,6 +12,5 @@ export const productsApi = {
   search: (term: string) => productService.searchProducts(term),
   filter: (filters: ProductFilters, sort?: ProductSort) =>
     productService.filterProducts(filters, sort),
-  related: (product: Product, limit?: number) =>
-    productService.getRelatedProducts(product, limit),
+  related: (product: Product, limit?: number) => productService.getRelatedProducts(product, limit),
 };

@@ -1,5 +1,7 @@
 # SK Sport WhatsApp Shop
 
+> 📖 **Full Application Documentation**: See [APP_DOCUMENTATION.md](file:///c:/Users/ljashwin/OneDrive/Documents/skstore/play-order-chat/APP_DOCUMENTATION.md) for complete architecture, all 15 homepage sections, database schema, and Supabase Auth admin setup instructions.
+
 SK SPORT STORE — WHATSAPP-FIRST SPORTS ECOMMERCE WEBSITE
 
 Build a modern, production-ready ecommerce-style website for SK Sport Store.
@@ -27,7 +29,6 @@ Pre-filled WhatsApp Message
 Customer taps Send
 ↓
 SK Sport Store manually confirms the order
-
 
 There is no online payment gateway in the MVP.
 
@@ -97,7 +98,6 @@ Database Adapter
 ↓
 Database
 
-
 Storage must follow:
 
 UI
@@ -107,7 +107,6 @@ Services
 Storage Adapter
 ↓
 Storage Provider
-
 
 The architecture must NOT directly couple the UI to Supabase.
 
@@ -131,7 +130,6 @@ Do NOT write:
 
 supabase.from(...)
 
-
 inside UI components or pages.
 
 All Supabase-specific implementation must remain behind the database adapter.
@@ -145,62 +143,61 @@ Use this architecture:
 src/
 │
 ├── api/
-│   ├── productsApi.ts
-│   ├── categoriesApi.ts
-│   └── ordersApi.ts
+│ ├── productsApi.ts
+│ ├── categoriesApi.ts
+│ └── ordersApi.ts
 │
 ├── services/
-│   ├── productService.ts
-│   ├── categoryService.ts
-│   ├── cartService.ts
-│   ├── orderService.ts
-│   ├── whatsappService.ts
-│   └── storageService.ts
+│ ├── productService.ts
+│ ├── categoryService.ts
+│ ├── cartService.ts
+│ ├── orderService.ts
+│ ├── whatsappService.ts
+│ └── storageService.ts
 │
 ├── db/
-│   ├── database.ts
-│   ├── types.ts
-│   │
-│   ├── adapters/
-│   │   ├── DatabaseAdapter.ts
-│   │   └── SupabaseDatabaseAdapter.ts
-│   │
-│   └── supabase/
-│       └── supabaseClient.ts
+│ ├── database.ts
+│ ├── types.ts
+│ │
+│ ├── adapters/
+│ │ ├── DatabaseAdapter.ts
+│ │ └── SupabaseDatabaseAdapter.ts
+│ │
+│ └── supabase/
+│ └── supabaseClient.ts
 │
 ├── models/
-│   ├── Product.ts
-│   ├── Category.ts
-│   ├── Cart.ts
-│   ├── Customer.ts
-│   └── Order.ts
+│ ├── Product.ts
+│ ├── Category.ts
+│ ├── Cart.ts
+│ ├── Customer.ts
+│ └── Order.ts
 │
 ├── components/
-│   ├── layout/
-│   ├── navigation/
-│   ├── products/
-│   ├── categories/
-│   ├── cart/
-│   ├── checkout/
-│   └── common/
+│ ├── layout/
+│ ├── navigation/
+│ ├── products/
+│ ├── categories/
+│ ├── cart/
+│ ├── checkout/
+│ └── common/
 │
 ├── pages/
-│   ├── Home.tsx
-│   ├── Products.tsx
-│   ├── Category.tsx
-│   ├── ProductDetails.tsx
-│   ├── Cart.tsx
-│   ├── About.tsx
-│   ├── Contact.tsx
-│   ├── FAQ.tsx
-│   ├── Shipping.tsx
-│   ├── Returns.tsx
-│   ├── Privacy.tsx
-│   └── Terms.tsx
+│ ├── Home.tsx
+│ ├── Products.tsx
+│ ├── Category.tsx
+│ ├── ProductDetails.tsx
+│ ├── Cart.tsx
+│ ├── About.tsx
+│ ├── Contact.tsx
+│ ├── FAQ.tsx
+│ ├── Shipping.tsx
+│ ├── Returns.tsx
+│ ├── Privacy.tsx
+│ └── Terms.tsx
 │
 └── config/
-    └── config.ts
-
+└── config.ts
 
 You may adjust filenames if necessary, but preserve the separation of responsibilities.
 
@@ -209,41 +206,39 @@ You may adjust filenames if necessary, but preserve the separation of responsibi
 Create a generic database interface:
 
 interface DatabaseAdapter {
-  find<T>(
-    table: string,
-    filters?: Record<string, unknown>
-  ): Promise<T[]>;
+find<T>(
+table: string,
+filters?: Record<string, unknown>
+): Promise<T[]>;
 
-  findById<T>(
-    table: string,
-    id: string
-  ): Promise<T | null>;
+findById<T>(
+table: string,
+id: string
+): Promise<T | null>;
 
-  create<T>(
-    table: string,
-    data: Partial<T>
-  ): Promise<T>;
+create<T>(
+table: string,
+data: Partial<T>
+): Promise<T>;
 
-  update<T>(
-    table: string,
-    id: string,
-    data: Partial<T>
-  ): Promise<T>;
+update<T>(
+table: string,
+id: string,
+data: Partial<T>
+): Promise<T>;
 
-  delete(
-    table: string,
-    id: string
-  ): Promise<void>;
+delete(
+table: string,
+id: string
+): Promise<void>;
 }
-
 
 Implement:
 
 DatabaseAdapter
-       ↑
-       │
+↑
+│
 SupabaseDatabaseAdapter
-
 
 The services should depend on the interface, not directly on Supabase.
 
@@ -267,7 +262,6 @@ VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
 VITE_WHATSAPP_NUMBER
 
-
 Never expose a Supabase service-role key in frontend code.
 
 8. UNIVERSAL STORAGE LAYER
@@ -276,39 +270,35 @@ Create:
 
 storageService
 
-
 with methods such as:
 
 uploadImage()
 deleteImage()
 getImageUrl()
 
-
 Create:
 
 interface StorageAdapter {
-  uploadImage(
-    file: File,
-    path: string
-  ): Promise<string>;
+uploadImage(
+file: File,
+path: string
+): Promise<string>;
 
-  deleteImage(
-    path: string
-  ): Promise<void>;
+deleteImage(
+path: string
+): Promise<void>;
 
-  getImageUrl(
-    path: string
-  ): string;
+getImageUrl(
+path: string
+): string;
 }
-
 
 Implement:
 
 StorageAdapter
-      ↑
-      │
+↑
+│
 SupabaseStorageAdapter
-
 
 The UI must never directly call Supabase Storage.
 
@@ -342,7 +332,6 @@ sort_order
 created_at
 updated_at
 
-
 products
 
 id
@@ -367,7 +356,6 @@ sort_order
 created_at
 updated_at
 
-
 Products belong to categories.
 
 Use stable UUIDs for database IDs.
@@ -379,7 +367,6 @@ Example:
 id: UUID
 sku: SK001
 name: Professional Cricket Bat
-
 
 10. SPORTS CATEGORIES
 
@@ -398,7 +385,6 @@ Sports Apparel
 Sports Accessories
 Protective Gear
 Training Equipment
-
 
 Do not assume these are the final categories.
 
@@ -424,7 +410,6 @@ category
 description
 stock status
 
-
 Additional fields should support:
 
 brand
@@ -435,7 +420,6 @@ gender
 features
 specifications
 
-
 12. CART ARCHITECTURE
 
 The cart must use browser localStorage.
@@ -444,18 +428,16 @@ Use exactly:
 
 cart
 
-
 as the localStorage key.
 
 The cart should store only:
 
 [
-  {
-    "productId": "uuid",
-    "quantity": 2
-  }
+{
+"productId": "uuid",
+"quantity": 2
+}
 ]
-
 
 Do not store the entire product database inside localStorage.
 
@@ -467,7 +449,6 @@ Create:
 
 cartService
 
-
 with:
 
 getCart()
@@ -478,20 +459,17 @@ clearCart()
 getItemCount()
 calculateSubtotal()
 
-
 Components must NOT directly use:
 
 localStorage.getItem()
 localStorage.setItem()
 localStorage.removeItem()
 
-
 Instead:
 
 cartService.addItem(productId)
 cartService.updateQuantity(productId, quantity)
 cartService.removeItem(productId)
-
 
 Keep localStorage implementation inside the cart service.
 
@@ -500,7 +478,6 @@ Keep localStorage implementation inside the cart service.
 Create:
 
 productService
-
 
 with:
 
@@ -512,7 +489,6 @@ getProductsByCategory()
 searchProducts()
 filterProducts()
 
-
 All product-related UI should communicate through this service.
 
 15. CATEGORY SERVICE
@@ -521,13 +497,11 @@ Create:
 
 categoryService
 
-
 with:
 
 getCategories()
 getCategoryBySlug()
 getCategoryProducts()
-
 
 16. WHATSAPP SERVICE
 
@@ -535,13 +509,11 @@ Create:
 
 whatsappService
 
-
 Responsibilities:
 
 buildOrderMessage()
 generateWhatsAppUrl()
 openWhatsApp()
-
 
 The service receives:
 
@@ -550,7 +522,6 @@ Cart items
 Quantities
 Prices
 Subtotal
-
 
 and creates a pre-filled WhatsApp message.
 
@@ -569,14 +540,15 @@ Phone:
 Items:
 
 1. Product Name
-Qty: 2
-₹1,499 × 2 = ₹2,998
+   Qty: 2
+   ₹1,499 × 2 = ₹2,998
 
 2. Product Name
-Qty: 1
-₹799 × 1 = ₹799
+   Qty: 1
+   ₹799 × 1 = ₹799
 
--------------------------
+---
+
 Subtotal: ₹3,797
 -------------------------
 
@@ -586,13 +558,11 @@ Delivery Address:
 Please confirm product availability,
 final amount, payment and delivery details.
 
-
 Use URL encoding.
 
 Open:
 
 https://wa.me/<WHATSAPP_NUMBER>?text=<ENCODED_MESSAGE>
-
 
 The WhatsApp number must come from configuration.
 
@@ -606,14 +576,12 @@ Order Confirmed
 Payment Successful
 Order Submitted
 
-
 when WhatsApp is opened.
 
 The correct state is:
 
 Your order message is ready in WhatsApp.
 Tap Send to submit your order.
-
 
 The customer manually sends the message.
 
@@ -633,7 +601,6 @@ Free delivery above ₹X
 New arrivals are here
 Order directly through WhatsApp
 
-
 Use configurable content where practical.
 
 02 — Header
@@ -651,14 +618,12 @@ Contact
 Search
 Cart
 
-
 Mobile:
 
 Logo
 Search
 Cart
 Menu
-
 
 Cart should display item count.
 
@@ -676,7 +641,6 @@ compete and perform better.
 [ Shop Sports ]
 
 [ Explore Categories ]
-
 
 Use high-quality sports imagery.
 
@@ -706,7 +670,6 @@ Basketball
 Fitness
 Running
 
-
 Each category should link to the relevant catalog.
 
 21. FEATURED PRODUCTS
@@ -723,7 +686,6 @@ Compare-at Price if applicable
 Stock Status
 Add to Cart
 
-
 Keep the card visually clean.
 
 22. SHOP BY CATEGORY
@@ -736,7 +698,6 @@ Apparel
 Accessories
 Protective Gear
 Training Equipment
-
 
 Use real categories from the database when available.
 
@@ -752,7 +713,6 @@ Wide Product Selection
 Easy WhatsApp Ordering
 Local Customer Support
 
-
 Do not invent certifications, partnerships or claims.
 
 24. NEW ARRIVALS
@@ -763,7 +723,6 @@ Use database ordering by:
 
 created_at
 
-
 or an explicit sort order.
 
 25. BEST SELLERS
@@ -773,7 +732,6 @@ If actual sales data is not available, do not falsely label products as "Best Se
 Instead use:
 
 Popular Picks
-
 
 only if there is a legitimate basis.
 
@@ -798,7 +756,6 @@ Send Through WhatsApp
 05
 SK Sport Store Confirms
 
-
 Make this very obvious because the site does not have normal checkout/payment.
 
 27. BRAND / STORE STORY
@@ -815,7 +772,6 @@ Who we serve
 Why customers choose us
 
 [ Learn More ]
-
 
 Do not invent company history.
 
@@ -839,7 +795,6 @@ Can I cancel an order?
 Can I return a product?
 How do I know if a product is available?
 
-
 30. FINAL CTA
 
 End the homepage with:
@@ -852,13 +807,11 @@ Find the equipment you need.
 
 [ Order on WhatsApp ]
 
-
 31. PRODUCTS PAGE
 
 Route:
 
 /products
-
 
 Include:
 
@@ -871,7 +824,6 @@ Price filter
 Availability filter
 Sort
 Product grid
-
 
 Desktop should support a sidebar/filter area.
 
@@ -889,13 +841,11 @@ SKU
 Sport
 Category
 
-
 Example:
 
 Searching:
 
 "bat"
-
 
 can return cricket bats.
 
@@ -911,7 +861,6 @@ Gender
 Size
 Availability
 
-
 Only show filters relevant to the available data.
 
 Do not create empty/useless filters.
@@ -921,7 +870,6 @@ Do not create empty/useless filters.
 Route:
 
 /products/:slug
-
 
 Structure:
 
@@ -950,7 +898,6 @@ Material
 Product Details
 Related Products
 
-
 Do not invent ratings or reviews.
 
 35. PRODUCT CARD
@@ -966,7 +913,6 @@ Discount if valid
 Stock Status
 Add to Cart
 
-
 Clicking the product opens its details page.
 
 36. CART PAGE
@@ -974,7 +920,6 @@ Clicking the product opens its details page.
 Route:
 
 /cart
-
 
 Display:
 
@@ -993,7 +938,6 @@ Subtotal
 
 [ Order on WhatsApp ]
 
-
 Empty state:
 
 Your cart is empty.
@@ -1002,7 +946,6 @@ Find the equipment you need.
 
 [ Shop Products ]
 
-
 37. CUSTOMER DETAILS
 
 Before opening WhatsApp, collect:
@@ -1010,7 +953,6 @@ Before opening WhatsApp, collect:
 Name *
 Phone Number *
 Delivery Address *
-
 
 Validate required fields.
 
@@ -1022,13 +964,11 @@ Subtotal
 
 [ Send Order on WhatsApp ]
 
-
 38. ABOUT PAGE
 
 Route:
 
 /about
-
 
 Sections:
 
@@ -1040,13 +980,11 @@ Why Customers Choose Us
 Store Information
 CTA
 
-
 39. CONTACT PAGE
 
 Route:
 
 /contact
-
 
 Include:
 
@@ -1057,7 +995,6 @@ Store Address
 Business Hours
 Map
 
-
 WhatsApp should be a primary CTA.
 
 40. FAQ PAGE
@@ -1065,7 +1002,6 @@ WhatsApp should be a primary CTA.
 Route:
 
 /faq
-
 
 Organize FAQs:
 
@@ -1075,7 +1011,6 @@ Payment
 Delivery
 Returns
 
-
 41. POLICY PAGES
 
 Create:
@@ -1084,7 +1019,6 @@ Create:
 /returns
 /privacy
 /terms
-
 
 Use the actual store policies.
 
@@ -1106,7 +1040,6 @@ Contact
 Search
 Cart
 
-
 Do not overload the navigation with too many links.
 
 Mobile navigation should be compact and easy to use.
@@ -1121,7 +1054,6 @@ Mobile
 Tablet
 Desktop
 Large Desktop
-
 
 Pay special attention to:
 
@@ -1176,43 +1108,42 @@ Create reusable components:
 components/
 │
 ├── layout/
-│   ├── Header
-│   ├── Footer
-│   └── AnnouncementBar
+│ ├── Header
+│ ├── Footer
+│ └── AnnouncementBar
 │
 ├── navigation/
-│   ├── DesktopNav
-│   ├── MobileNav
-│   ├── SearchBar
-│   └── Breadcrumb
+│ ├── DesktopNav
+│ ├── MobileNav
+│ ├── SearchBar
+│ └── Breadcrumb
 │
 ├── products/
-│   ├── ProductCard
-│   ├── ProductGrid
-│   ├── ProductGallery
-│   ├── ProductPrice
-│   ├── ProductFilters
-│   └── CategoryCard
+│ ├── ProductCard
+│ ├── ProductGrid
+│ ├── ProductGallery
+│ ├── ProductPrice
+│ ├── ProductFilters
+│ └── CategoryCard
 │
 ├── cart/
-│   ├── CartItem
-│   ├── CartSummary
-│   ├── QuantitySelector
-│   └── EmptyCart
+│ ├── CartItem
+│ ├── CartSummary
+│ ├── QuantitySelector
+│ └── EmptyCart
 │
 ├── checkout/
-│   ├── CustomerDetailsForm
-│   ├── OrderSummary
-│   └── WhatsAppOrderButton
+│ ├── CustomerDetailsForm
+│ ├── OrderSummary
+│ └── WhatsAppOrderButton
 │
 └── common/
-    ├── Button
-    ├── Input
-    ├── Modal
-    ├── LoadingState
-    ├── ErrorState
-    └── EmptyState
-
+├── Button
+├── Input
+├── Modal
+├── LoadingState
+├── ErrorState
+└── EmptyState
 
 Avoid duplicated UI.
 
@@ -1241,7 +1172,6 @@ Success
 Empty
 Error
 
-
 Examples:
 
 Products unavailable
@@ -1249,7 +1179,6 @@ Product not found
 No products match your filters
 Cart is empty
 Unable to prepare WhatsApp order
-
 
 Never silently fail.
 
@@ -1295,7 +1224,6 @@ Product URLs should use:
 
 /products/professional-cricket-bat
 
-
 instead of exposing database IDs.
 
 50. PERFORMANCE
@@ -1319,7 +1247,6 @@ Do not load every product image unnecessarily on the homepage.
 Never expose:
 
 SUPABASE_SERVICE_ROLE_KEY
-
 
 in frontend code.
 
@@ -1353,7 +1280,6 @@ Notifications
 Email
 SMS
 
-
 Do not build these now unless required.
 
 The architecture should simply make them possible later.
@@ -1374,7 +1300,6 @@ Contact
 FAQ
 Policies
 
-
 Do not build:
 
 Online Payment
@@ -1385,7 +1310,6 @@ Wishlist
 Reviews System
 Coupons
 Complex Inventory
-
 
 unless specifically requested later.
 
@@ -1419,7 +1343,6 @@ Cart
 Customer
 Order
 
-
 Step 3 — Database Layer
 
 Create:
@@ -1427,7 +1350,6 @@ Create:
 DatabaseAdapter
 SupabaseDatabaseAdapter
 database provider
-
 
 Step 4 — Storage Layer
 
@@ -1437,14 +1359,12 @@ StorageAdapter
 SupabaseStorageAdapter
 storageService
 
-
 Step 5 — Supabase Schema
 
 Create:
 
 categories
 products
-
 
 with proper relationships and indexes.
 
@@ -1458,7 +1378,6 @@ cartService
 whatsappService
 orderService
 
-
 Step 7 — Product Catalog
 
 Build:
@@ -1468,7 +1387,6 @@ Categories
 Product Details
 Search
 Filters
-
 
 Step 8 — Cart
 
@@ -1480,7 +1398,6 @@ Remove
 Subtotal
 Persistence
 
-
 Step 9 — WhatsApp
 
 Build:
@@ -1489,7 +1406,6 @@ Customer Details
 Order Summary
 Message Generator
 WhatsApp URL
-
 
 Step 10 — Homepage
 
@@ -1507,7 +1423,6 @@ Returns
 Privacy
 Terms
 
-
 Step 12 — QA
 
 Test all flows.
@@ -1519,7 +1434,6 @@ Test:
 Mobile
 Tablet
 Desktop
-
 
 55. TESTING CHECKLIST
 
@@ -1584,18 +1498,15 @@ Verify there are no direct Supabase calls inside:
 components/
 pages/
 
-
 Verify there are no direct localStorage calls outside:
 
 cartService
-
 
 Verify Supabase-specific code is contained inside:
 
 db/
 storage adapters
 supabase provider
-
 
 56. FINAL ARCHITECTURE
 
@@ -1611,7 +1522,6 @@ The finished application must follow:
                      ↓
                   SUPABASE
 
-
 For files/images:
 
                     UI
@@ -1622,32 +1532,29 @@ For files/images:
                      ↓
              SUPABASE STORAGE
 
-
 For cart:
 
 UI
- ↓
+↓
 cartService
- ↓
+↓
 localStorage
-
 
 For ordering:
 
 Cart
- ↓
+↓
 Customer Details
- ↓
+↓
 orderService
- ↓
+↓
 whatsappService
- ↓
+↓
 wa.me
- ↓
+↓
 WhatsApp
- ↓
+↓
 Manual Store Confirmation
-
 
 This architecture is mandatory.
 

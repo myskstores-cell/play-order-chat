@@ -5,13 +5,11 @@ type Variant = "primary" | "secondary" | "outline" | "ghost" | "whatsapp";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-primary text-primary-foreground hover:brightness-110 active:brightness-95",
+  primary: "bg-primary text-primary-foreground hover:brightness-110 active:brightness-95",
   secondary: "bg-surface-strong text-foreground hover:bg-surface",
   outline: "border border-border text-foreground hover:bg-surface",
   ghost: "text-foreground hover:bg-surface",
-  whatsapp:
-    "bg-whatsapp text-whatsapp-foreground hover:brightness-110 active:brightness-95",
+  whatsapp: "bg-whatsapp text-whatsapp-foreground hover:brightness-110 active:brightness-95",
 };
 
 const sizes: Record<Size, string> = {

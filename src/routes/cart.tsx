@@ -2,11 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { Container, PageHeader } from "@/components/common/Section";
 import { Button } from "@/components/common/Button";
-import {
-  EmptyState,
-  ErrorState,
-  LoadingState,
-} from "@/components/common/States";
+import { EmptyState, ErrorState, LoadingState } from "@/components/common/States";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/format";
 
@@ -58,10 +54,7 @@ function CartPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
             <ul className="space-y-4">
               {cart.items.map((item) => (
-                <li
-                  key={item.product.id}
-                  className="surface-panel flex gap-4 rounded-sm p-4"
-                >
+                <li key={item.product.id} className="surface-panel flex gap-4 rounded-sm p-4">
                   <div className="h-24 w-24 shrink-0 overflow-hidden rounded-sm bg-surface-strong">
                     {item.product.imageUrl && (
                       <img
@@ -88,9 +81,7 @@ function CartPage() {
                           type="button"
                           aria-label={`Decrease quantity of ${item.product.name}`}
                           className="h-9 w-9"
-                          onClick={() =>
-                            updateQuantity(item.product.id, item.quantity - 1)
-                          }
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                         >
                           −
                         </button>
@@ -99,9 +90,7 @@ function CartPage() {
                           type="button"
                           aria-label={`Increase quantity of ${item.product.name}`}
                           className="h-9 w-9"
-                          onClick={() =>
-                            updateQuantity(item.product.id, item.quantity + 1)
-                          }
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                         >
                           +
                         </button>
@@ -126,9 +115,7 @@ function CartPage() {
             <aside className="surface-panel h-fit rounded-sm p-5">
               <h2 className="display-title text-xl">Summary</h2>
               <div className="mt-4 flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Items ({cart.itemCount})
-                </span>
+                <span className="text-muted-foreground">Items ({cart.itemCount})</span>
                 <span className="font-bold">{formatPrice(cart.subtotal)}</span>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
@@ -139,13 +126,7 @@ function CartPage() {
                   Continue to details
                 </Button>
               </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                fullWidth
-                className="mt-2"
-                onClick={clearCart}
-              >
+              <Button variant="ghost" size="sm" fullWidth className="mt-2" onClick={clearCart}>
                 Clear cart
               </Button>
             </aside>

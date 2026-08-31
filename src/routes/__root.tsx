@@ -14,6 +14,7 @@ import { CartProvider } from "@/hooks/useCart";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -84,8 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "SK Sport Store" },
       {
         name: "description",
-        content:
-          "Sports equipment, footwear and apparel from SK Sport Store. Order on WhatsApp.",
+        content: "Sports equipment, footwear and apparel from SK Sport Store. Order on WhatsApp.",
       },
       { name: "author", content: "SK Sport Store" },
       { property: "og:title", content: "SK Sport Store" },
@@ -145,6 +145,7 @@ function RootComponent() {
             <Outlet />
           </main>
           <Footer />
+          <FloatingWhatsApp />
         </div>
       </CartProvider>
     </QueryClientProvider>

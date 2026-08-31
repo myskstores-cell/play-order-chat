@@ -1,27 +1,36 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/api/productsApi";
 import { categoriesApi } from "@/api/categoriesApi";
-import { Container, SectionHeader } from "@/components/common/Section";
-import { Button } from "@/components/common/Button";
-import { ProductGrid } from "@/components/product/ProductCard";
-import { CategoryCard } from "@/components/product/CategoryCard";
-import { ErrorState, ProductGridSkeleton } from "@/components/common/States";
-import { config } from "@/config/config";
+import { HeroSection } from "@/components/home/HeroSection";
+import { BenefitStrip } from "@/components/home/BenefitStrip";
+import { ShopBySport } from "@/components/home/ShopBySport";
+import { BestSellers } from "@/components/home/BestSellers";
+import { ShopByNeed } from "@/components/home/ShopByNeed";
+import { DealsSection } from "@/components/home/DealsSection";
+import { ShopByBudget } from "@/components/home/ShopByBudget";
+import { NewArrivals } from "@/components/home/NewArrivals";
+import { ShopByBrand } from "@/components/home/ShopByBrand";
+import { KitBuilder } from "@/components/home/KitBuilder";
+import { WhyChooseUs } from "@/components/home/WhyChooseUs";
+import { WhatsAppCtaSection } from "@/components/home/WhatsAppCtaSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SK Sport Store — Sports Gear, Shoes & Apparel" },
+      { title: "SK Sport Store — Sports Gear, Shoes & Equipment | WhatsApp Orders" },
       {
         name: "description",
         content:
-          "Browse cricket, football, badminton, fitness gear, shoes and apparel at SK Sport Store. Order easily on WhatsApp — no online payment.",
+          "Shop cricket, football, badminton, tennis, running and fitness equipment at SK Sport Store. Order directly on WhatsApp with expert store support — no online payment.",
       },
-      { property: "og:title", content: "SK Sport Store — Sports Gear, Shoes & Apparel" },
+      {
+        property: "og:title",
+        content: "SK Sport Store — Sports Gear, Shoes & Equipment",
+      },
       {
         property: "og:description",
-        content: "Shop sports equipment and apparel. Place your order on WhatsApp.",
+        content: "Browse sports equipment, footwear and apparel. Order and confirm on WhatsApp.",
       },
     ],
   }),
@@ -29,81 +38,74 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const featured = useQuery({
+  const allProductsQuery = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: () => productsApi.list(),
+  });
+
+  const featuredQuery = useQuery({
     queryKey: ["products", "featured"],
     queryFn: () => productsApi.featured(8),
   });
-  const categories = useQuery({
+
+  const newArrivalsQuery = useQuery({
+    queryKey: ["products", "newArrivals"],
+    queryFn: () => productsApi.newArrivals(8),
+  });
+
+  const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: () => categoriesApi.list(),
   });
 
+  const allProducts = allProductsQuery.data ?? [];
+  const featuredProducts = featuredQuery.data ?? [];
+  const newArrivals = newArrivalsQuery.data ?? [];
+  const categories = categoriesQuery.data ?? [];
+
   return (
-    <>
-      <section className="relative overflow-hidden border-b border-border">
-        <img
-          src="/images/hero.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-35"
-        />
-        <Container className="relative py-20 sm:py-28">
-          <p className="eyebrow mb-3">{config.store.tagline}</p>
-          <h1 className="display-title max-w-3xl text-4xl sm:text-6xl">
-            Gear up at SK Sport Store
-          </h1>
-          <p className="mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
-            {config.store.description}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/products">
-              <Button size="lg">Shop all products</Button>
-            </Link>
-            <Link to="/categories">
-              <Button size="lg" variant="outline">
-                Browse categories
-              </Button>
-            </Link>
-          </div>
-        </Container>
-      </section>
+    <div className="flex flex-col">
+      {/* 03. HERO SECTION */}
+      <HeroSection />
 
-      <Container className="py-16">
-        <SectionHeader
-          eyebrow="Shop by sport"
-          title="Categories"
-          action={
-            <Link to="/categories" className="text-xs font-semibold uppercase tracking-wider text-primary">
-              View all
-            </Link>
-          }
-        />
-        {categories.isLoading ? (
-          <ProductGridSkeleton count={4} />
-        ) : categories.isError ? (
-          <ErrorState onRetry={() => categories.refetch()} />
-        ) : (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {(categories.data ?? []).slice(0, 8).map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
-        )}
-      </Container>
+      {/* 04. TRUST / BENEFITS STRIP */}
+      <BenefitStrip />
 
-      <Container className="pb-20">
-        <SectionHeader
-          eyebrow="Handpicked"
-          title="Featured products"
-          description="Popular picks in store right now."
-        />
-        {featured.isLoading ? (
-          <ProductGridSkeleton />
-        ) : featured.isError ? (
-          <ErrorState onRetry={() => featured.refetch()} />
-        ) : (
-          <ProductGrid products={featured.data ?? []} />
-        )}
-      </Container>
-    </>
+      {/* 05. SHOP BY SPORT */}
+      <ShopBySport categories={categories} isLoading={categoriesQuery.isLoading} />
+
+      {/* 06. BEST SELLERS */}
+      <BestSellers
+        products={featuredProducts.length > 0 ? featuredProducts : allProducts}
+        isLoading={featuredQuery.isLoading}
+      />
+
+      {/* 07. SHOP BY NEED */}
+      <ShopByNeed />
+
+      {/* 08. DEALS OF THE WEEK */}
+      <DealsSection products={allProducts} />
+
+      {/* 09. SHOP BY BUDGET */}
+      <ShopByBudget />
+
+      {/* 10. NEW ARRIVALS */}
+      <NewArrivals
+        products={newArrivals.length > 0 ? newArrivals : allProducts}
+        isLoading={newArrivalsQuery.isLoading}
+      />
+
+      {/* 11. SHOP BY BRAND */}
+      <ShopByBrand products={allProducts} />
+
+      {/* 12. BUILD YOUR KIT */}
+      <KitBuilder products={allProducts} />
+
+      {/* 13. WHY SK SPORT STORE */}
+      <WhyChooseUs />
+
+      {/* 14. WHATSAPP CTA */}
+      <WhatsAppCtaSection />
+    </div>
   );
 }

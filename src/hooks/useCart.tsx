@@ -69,8 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       error,
       itemCount: cart.itemCount,
       addItem: (productId, quantity = 1) => cartService.addItem(productId, quantity),
-      updateQuantity: (productId, quantity) =>
-        cartService.updateQuantity(productId, quantity),
+      updateQuantity: (productId, quantity) => cartService.updateQuantity(productId, quantity),
       removeItem: (productId) => cartService.removeItem(productId),
       clearCart: () => cartService.clearCart(),
       refresh,

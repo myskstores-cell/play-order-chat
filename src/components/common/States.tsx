@@ -4,7 +4,10 @@ import { Button } from "./Button";
 
 export function LoadingState({ label = "Loading…" }: { label?: string }) {
   return (
-    <div role="status" className="flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground">
+    <div
+      role="status"
+      className="flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground"
+    >
       <Loader2 className="h-6 w-6 animate-spin text-primary" aria-hidden="true" />
       <p className="text-sm">{label}</p>
     </div>
@@ -38,7 +41,10 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div role="alert" className="surface-panel flex flex-col items-center gap-3 rounded-sm px-6 py-14 text-center">
+    <div
+      role="alert"
+      className="surface-panel flex flex-col items-center gap-3 rounded-sm px-6 py-14 text-center"
+    >
       <TriangleAlert className="h-7 w-7 text-destructive" aria-hidden="true" />
       <h2 className="display-title text-2xl">{title}</h2>
       <p className="max-w-md text-sm text-muted-foreground">{message}</p>

@@ -27,26 +27,24 @@ function PrivacyPage() {
       <PageHeader eyebrow="Legal" title="Privacy policy" />
       <Container className="max-w-3xl space-y-4 py-12 text-sm leading-relaxed text-muted-foreground">
         <p>
-          <strong className="text-foreground">What we collect.</strong> The name, phone
-          number, delivery address and notes you type at checkout. These are used only
-          to build your WhatsApp order message.
+          <strong className="text-foreground">What we collect.</strong> The name, phone number,
+          delivery address and notes you type at checkout. These are used only to build your
+          WhatsApp order message.
         </p>
         <p>
-          <strong className="text-foreground">Where it is stored.</strong> Your cart is
-          stored in your own browser. Checkout details are not stored on this website —
-          they are sent to us through WhatsApp when you tap send.
+          <strong className="text-foreground">Where it is stored.</strong> Your cart is stored in
+          your own browser. Checkout details are not stored on this website — they are sent to us
+          through WhatsApp when you tap send.
         </p>
         <p>
-          <strong className="text-foreground">WhatsApp.</strong> Messages you send are
-          handled under WhatsApp's own privacy terms.
+          <strong className="text-foreground">WhatsApp.</strong> Messages you send are handled under
+          WhatsApp's own privacy terms.
         </p>
         <p>
-          <strong className="text-foreground">No payment data.</strong> This website does
-          not collect card, UPI or bank details.
+          <strong className="text-foreground">No payment data.</strong> This website does not
+          collect card, UPI or bank details.
         </p>
-        <p>
-          Questions? Email {config.store.email}.
-        </p>
+        <p>Questions? Email {config.store.email}.</p>
       </Container>
     </>
   );

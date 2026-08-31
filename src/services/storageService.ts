@@ -10,6 +10,5 @@ export function setStorageAdapter(next: StorageAdapter) {
 export const storageService = {
   uploadImage: (file: File, path: string) => adapter.uploadImage(file, path),
   deleteImage: (path: string) => adapter.deleteImage(path),
-  getImageUrl: (path: string | null | undefined) =>
-    path ? adapter.getImageUrl(path) : "",
+  getImageUrl: (path: string | null | undefined) => (path ? adapter.getImageUrl(path) : ""),
 };

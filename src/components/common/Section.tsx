@@ -1,17 +1,9 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function Container({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function Container({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8", className)}>
-      {children}
-    </div>
+    <div className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8", className)}>{children}</div>
   );
 }
 
@@ -55,9 +47,7 @@ export function PageHeader({
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
         <h1 className="display-title text-4xl sm:text-5xl">{title}</h1>
         {description && (
-          <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            {description}
-          </p>
+          <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">{description}</p>
         )}
       </Container>
     </header>

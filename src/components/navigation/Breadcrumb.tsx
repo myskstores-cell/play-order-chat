@@ -28,9 +28,7 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
                 {item.label}
               </span>
             )}
-            {index < items.length - 1 && (
-              <ChevronRight className="h-3 w-3" aria-hidden="true" />
-            )}
+            {index < items.length - 1 && <ChevronRight className="h-3 w-3" aria-hidden="true" />}
           </li>
         ))}
       </ol>

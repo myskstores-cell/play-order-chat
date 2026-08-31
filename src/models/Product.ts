@@ -13,7 +13,9 @@ export interface Product {
   price: number;
   compareAtPrice: number | null;
   imageUrl: string | null;
+  images?: string[];
   size: string | null;
+
   brand: string | null;
   sport: string | null;
   gender: string | null;
@@ -37,12 +39,7 @@ export interface ProductFilters {
   inStockOnly?: boolean;
 }
 
-export type ProductSort =
-  | "featured"
-  | "newest"
-  | "price-asc"
-  | "price-desc"
-  | "name-asc";
+export type ProductSort = "featured" | "newest" | "price-asc" | "price-desc" | "name-asc";
 
 export function isAvailable(product: Product): boolean {
   return product.stockStatus !== "out_of_stock";
@@ -50,7 +47,5 @@ export function isAvailable(product: Product): boolean {
 
 export function discountPercent(product: Product): number | null {
   if (!product.compareAtPrice || product.compareAtPrice <= product.price) return null;
-  return Math.round(
-    ((product.compareAtPrice - product.price) / product.compareAtPrice) * 100,
-  );
+  return Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100);
 }

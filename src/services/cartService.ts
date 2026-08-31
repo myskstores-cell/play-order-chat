@@ -23,9 +23,7 @@ function read(): CartItem[] {
     return parsed
       .filter(
         (item): item is CartItem =>
-          !!item &&
-          typeof item.productId === "string" &&
-          typeof item.quantity === "number",
+          !!item && typeof item.productId === "string" && typeof item.quantity === "number",
       )
       .map((item) => ({
         productId: item.productId,
@@ -103,9 +101,7 @@ export const cartService = {
     if (stored.length === 0)
       return { items: [], subtotal: 0, itemCount: 0, unavailableProductIds: [] };
 
-    const products = await productService.getProductsByIds(
-      stored.map((i) => i.productId),
-    );
+    const products = await productService.getProductsByIds(stored.map((i) => i.productId));
     const byId = new Map(products.map((p) => [p.id, p]));
     const items = stored
       .filter((i) => byId.has(i.productId))
@@ -122,9 +118,7 @@ export const cartService = {
       items,
       subtotal: items.reduce((sum, i) => sum + i.lineTotal, 0),
       itemCount: items.reduce((sum, i) => sum + i.quantity, 0),
-      unavailableProductIds: stored
-        .filter((i) => !byId.has(i.productId))
-        .map((i) => i.productId),
+      unavailableProductIds: stored.filter((i) => !byId.has(i.productId)).map((i) => i.productId),
     };
   },
 };

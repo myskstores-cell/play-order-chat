@@ -67,6 +67,14 @@ function ProductDetailPage() {
 
   const discount = discountPercent(product);
   const available = isAvailable(product);
+  const allImages =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.imageUrl
+        ? [product.imageUrl]
+        : [];
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const currentImage = selectedImage || allImages[0] || null;
 
   return (
     <Container className="py-8">
@@ -79,13 +87,38 @@ function ProductDetailPage() {
       />
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
-        <div className="surface-panel aspect-square overflow-hidden rounded-sm bg-surface-strong">
-          {product.imageUrl && (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
+        <div>
+          <div className="surface-panel aspect-square overflow-hidden rounded-sm bg-surface-strong">
+            {currentImage && (
+              <img
+                src={currentImage}
+                alt={product.name}
+                className="h-full w-full object-cover transition-all duration-300"
+              />
+            )}
+          </div>
+
+          {allImages.length > 1 && (
+            <div className="mt-3.5 flex gap-2.5 overflow-x-auto pb-1">
+              {allImages.map((img, idx) => (
+                <button
+                  key={`${img}-${idx}`}
+                  type="button"
+                  onClick={() => setSelectedImage(img)}
+                  className={`h-16 w-16 shrink-0 overflow-hidden rounded-xs border-2 transition-all ${
+                    currentImage === img
+                      ? "border-primary shadow-md shadow-primary/20 scale-105"
+                      : "border-border/70 hover:border-primary/50 opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`${product.name} view ${idx + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
           )}
         </div>
 

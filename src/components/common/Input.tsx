@@ -2,7 +2,7 @@ import { useId, type InputHTMLAttributes, type TextareaHTMLAttributes } from "re
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none";
+  "w-full rounded-sm border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-muted/30 read-only:cursor-not-allowed read-only:bg-muted/30";
 
 interface BaseProps {
   label: string;
@@ -23,7 +23,10 @@ export function Input({
   const inputId = id ?? generated;
   return (
     <div className="space-y-1.5">
-      <label htmlFor={inputId} className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <label
+        htmlFor={inputId}
+        className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         {label}
         {props.required && <span className="ml-1 text-accent">*</span>}
       </label>
@@ -56,7 +59,10 @@ export function Textarea({
   const inputId = id ?? generated;
   return (
     <div className="space-y-1.5">
-      <label htmlFor={inputId} className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <label
+        htmlFor={inputId}
+        className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         {label}
         {props.required && <span className="ml-1 text-accent">*</span>}
       </label>
