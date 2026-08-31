@@ -236,8 +236,8 @@ export const config = {
   store: {
     name: "SK Sport Store",
     tagline: "Sports equipment, footwear, apparel and accessories",
-    whatsappNumber: "919000000000", // Update with your actual WhatsApp phone number with country code
-    phone: "+91 90000 00000",
+    whatsappNumber: "917338882551", // WhatsApp phone number with country code
+    phone: "+91 7338882551",
     email: "hello@sksportstore.com",
     address: "SK Sport Store, Main Market Road",
     openingHours: "Mon – Sat: 9:00 AM – 9:00 PM | Sun: 10:00 AM – 6:00 PM",
