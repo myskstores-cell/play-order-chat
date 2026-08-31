@@ -16,10 +16,15 @@ export function ProductCard({ product, showWhatsAppAction = true }: ProductCardP
   const isLowStock = product.stockStatus === "low_stock";
   const isOutOfStock = product.stockStatus === "out_of_stock";
 
-  const waMessage = whatsappService.buildProductInquiryMessage({
+  const waMessage = whatsappService.buildDirectProductOrderMessage({
+    id: product.id,
+    sku: product.sku,
     name: product.name,
     price: product.price,
-  });
+    brand: product.brand,
+    size: product.size,
+    sport: product.sport,
+  }, 1);
   const waUrl = whatsappService.generateWhatsAppUrl(waMessage);
 
   return (

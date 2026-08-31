@@ -1,73 +1,156 @@
 import { config } from "@/config/config";
 import { formatPrice } from "@/lib/format";
 import type { OrderDraft } from "@/models/Order";
+import type { ResolvedCartItem } from "@/models/Cart";
+import type { Customer } from "@/models/Customer";
 
-function line(label: string, value: string) {
-  return `${label}\n${value}`;
+export interface DirectProductOrder {
+  id?: string;
+  sku?: string;
+  name: string;
+  price: number;
+  size?: string | null;
+  brand?: string | null;
+  sport?: string | null;
 }
 
 export const whatsappService = {
+  /**
+   * Direct "DM to Buy" / Single product WhatsApp order message with Product ID, Name, Quantity, Price, and Total.
+   */
+  buildDirectProductOrderMessage(product: DirectProductOrder, quantity: number = 1): string {
+    const qty = Math.max(1, quantity);
+    const unitPrice = Number(product.price) || 0;
+    const totalPrice = unitPrice * qty;
+    const skuOrId = product.sku || product.id || "N/A";
+
+    const lines: string[] = [
+      `🛍️ *NEW ORDER INQUIRY — ${config.store.name.toUpperCase()}*`,
+      "",
+      `📦 *Product ID / SKU:* ${skuOrId}`,
+      `🏷️ *Product Name:* ${product.name}`,
+      ...(product.brand ? [`🏢 *Brand:* ${product.brand}`] : []),
+      ...(product.size ? [`📏 *Size:* ${product.size}`] : []),
+      `🔢 *Quantity:* ${qty}`,
+      `💵 *Unit Price:* ${formatPrice(unitPrice)}`,
+      "━━━━━━━━━━━━━━━━━━━━",
+      `💰 *Total Price:* ${formatPrice(totalPrice)}${qty > 1 ? ` (${formatPrice(unitPrice)} × ${qty})` : ""}`,
+      "━━━━━━━━━━━━━━━━━━━━",
+      "",
+      `Hi ${config.store.name} 👋, I would like to order this item! Please confirm stock availability, payment options, and delivery timing.`,
+    ];
+
+    return lines.join("\n");
+  },
+
+  /**
+   * Complete multi-product cart order message with Customer Info, Product IDs, Names, Quantities, Unit Prices, and Total.
+   */
   buildOrderMessage(order: OrderDraft): string {
-    const items = order.lines
-      .map(
-        (l, index) =>
-          `${index + 1}. ${l.name} (${l.sku})\nQty: ${l.quantity}\n${formatPrice(
-            l.unitPrice,
-          )} x ${l.quantity} = ${formatPrice(l.lineTotal)}`,
-      )
+    const totalQty = order.lines.reduce((sum, l) => sum + (l.quantity || 0), 0);
+
+    const itemsText = order.lines
+      .map((l, index) => {
+        const skuText = l.sku ? `   • *Product ID / SKU:* ${l.sku}\n` : "";
+        return [
+          `*${index + 1}. ${l.name}*`,
+          skuText ? skuText.trimEnd() : null,
+          `   • *Unit Price:* ${formatPrice(l.unitPrice)}`,
+          `   • *Quantity:* ${l.quantity}`,
+          `   • *Item Total:* ${formatPrice(l.lineTotal)}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+      })
+      .join("\n\n");
+
+    const messageParts: string[] = [
+      `🛍️ *NEW ORDER — ${config.store.name.toUpperCase()}*`,
+      "",
+      "👤 *Customer Details:*",
+      `• *Name:* ${order.customer.name.trim()}`,
+      `• *Phone:* ${order.customer.phone.trim()}`,
+      `• *Delivery Address:* ${order.customer.address.trim()}`,
+      ...(order.customer.notes?.trim()
+        ? [`• *Notes / Size:* ${order.customer.notes.trim()}`]
+        : []),
+      "",
+      `📦 *Order Items (${order.lines.length} Unique Items, ${totalQty} Total Qty):*`,
+      "━━━━━━━━━━━━━━━━━━━━",
+      itemsText,
+      "━━━━━━━━━━━━━━━━━━━━",
+      `💰 *TOTAL ORDER PRICE:* ${formatPrice(order.subtotal)}`,
+      "━━━━━━━━━━━━━━━━━━━━",
+      "",
+      "Please confirm product availability, payment method, and dispatch schedule. Thank you!",
+    ];
+
+    return messageParts.join("\n");
+  },
+
+  /**
+   * Fast 1-Click Cart WhatsApp order message (without requiring full form).
+   */
+  buildCartQuickOrderMessage(items: ResolvedCartItem[]): string {
+    const totalQty = items.reduce((sum, i) => sum + i.quantity, 0);
+    const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
+
+    const itemsText = items
+      .map((item, index) => {
+        const sku = item.product.sku || item.product.id || "N/A";
+        return [
+          `*${index + 1}. ${item.product.name}*`,
+          `   • *Product ID / SKU:* ${sku}`,
+          `   • *Unit Price:* ${formatPrice(item.product.price)}`,
+          `   • *Quantity:* ${item.quantity}`,
+          `   • *Item Total:* ${formatPrice(item.lineTotal)}`,
+        ].join("\n");
+      })
       .join("\n\n");
 
     return [
-      `${config.store.name.toUpperCase()} — NEW ORDER`,
+      `🛍️ *CART ORDER INQUIRY — ${config.store.name.toUpperCase()}*`,
       "",
-      line("Customer:", order.customer.name.trim()),
+      `📦 *Items in Cart (${items.length} Products, ${totalQty} Total Qty):*`,
+      "━━━━━━━━━━━━━━━━━━━━",
+      itemsText,
+      "━━━━━━━━━━━━━━━━━━━━",
+      `💰 *TOTAL CART PRICE:* ${formatPrice(subtotal)}`,
+      "━━━━━━━━━━━━━━━━━━━━",
       "",
-      line("Phone:", order.customer.phone.trim()),
-      "",
-      "Items:",
-      "",
-      items,
-      "",
-      "-------------------------",
-      `Subtotal: ${formatPrice(order.subtotal)}`,
-      "-------------------------",
-      "",
-      line("Delivery Address:", order.customer.address.trim()),
-      ...(order.customer.notes?.trim() ? ["", line("Notes:", order.customer.notes.trim())] : []),
-      "",
-      "Please confirm product availability,",
-      "final amount, payment and delivery details.",
+      `Hi ${config.store.name} 👋, I want to place an order for these cart items! Please confirm availability and delivery details.`,
     ].join("\n");
   },
 
-  buildProductInquiryMessage(product: { name: string; price: number }): string {
-    return [
-      `Hi ${config.store.name} 👋`,
-      "",
-      "I'm interested in:",
-      "",
-      product.name,
-      `Price: ${formatPrice(product.price)}`,
-      "",
-      "Is this product available?",
-    ].join("\n");
+  /**
+   * Legacy alias for compatibility.
+   */
+  buildProductInquiryMessage(product: { id?: string; sku?: string; name: string; price: number }): string {
+    return this.buildDirectProductOrderMessage(product, 1);
   },
 
   buildKitInquiryMessage(
     sportName: string,
     items: Array<{ name: string; price?: number }>,
   ): string {
+    const total = items.reduce((sum, i) => sum + (i.price || 0), 0);
     const itemList = items
-      .map((item) => `- ${item.name}${item.price ? ` (${formatPrice(item.price)})` : ""}`)
+      .map((item, index) => `${index + 1}. ${item.name}${item.price ? ` (${formatPrice(item.price)})` : ""}`)
       .join("\n");
+
     return [
-      `Hi ${config.store.name} 👋`,
+      `🏏 *${sportName.toUpperCase()} KIT COMBO INQUIRY — ${config.store.name.toUpperCase()}*`,
       "",
-      `I'm interested in building a ${sportName} Kit with:`,
+      `📦 *Bundle Items (${items.length} Products):*`,
       itemList,
+      "━━━━━━━━━━━━━━━━━━━━",
+      total > 0 ? `💰 *Estimated Kit Total:* ${formatPrice(total)}` : "",
+      "━━━━━━━━━━━━━━━━━━━━",
       "",
-      "Could you please share availability and bundle pricing?",
-    ].join("\n");
+      `Hi ${config.store.name} 👋, I would like to order this customized ${sportName} Kit! Please confirm availability and package pricing.`,
+    ]
+      .filter(Boolean)
+      .join("\n");
   },
 
   buildConsultationMessage(topic?: string): string {

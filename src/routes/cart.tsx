@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { Trash2, MessageCircle } from "lucide-react";
 import { Container, PageHeader } from "@/components/common/Section";
 import { Button } from "@/components/common/Button";
 import { EmptyState, ErrorState, LoadingState } from "@/components/common/States";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/format";
+import { whatsappService } from "@/services/whatsappService";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -121,9 +122,21 @@ function CartPage() {
               <p className="mt-2 text-xs text-muted-foreground">
                 Delivery and final amount are confirmed by our team on WhatsApp.
               </p>
-              <Link to="/checkout" className="mt-5 block">
-                <Button fullWidth size="lg">
-                  Continue to details
+              <a
+                href={whatsappService.generateWhatsAppUrl(
+                  whatsappService.buildCartQuickOrderMessage(cart.items),
+                )}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xs bg-whatsapp px-4 text-xs font-bold uppercase tracking-wider text-whatsapp-foreground shadow-md transition-all hover:brightness-110 active:scale-[0.99]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>DM TO BUY ON WHATSAPP</span>
+              </a>
+
+              <Link to="/checkout" className="mt-2.5 block">
+                <Button fullWidth size="lg" variant="outline">
+                  Enter Address Details First
                 </Button>
               </Link>
               <Button variant="ghost" size="sm" fullWidth className="mt-2" onClick={clearCart}>

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { productsApi } from "@/api/productsApi";
 import { Container } from "@/components/common/Section";
 import { Button } from "@/components/common/Button";
@@ -10,6 +11,7 @@ import { Breadcrumb } from "@/components/navigation/Breadcrumb";
 import { formatPrice, stockLabel } from "@/lib/format";
 import { discountPercent, isAvailable } from "@/models/Product";
 import { useCart } from "@/hooks/useCart";
+import { whatsappService } from "@/services/whatsappService";
 
 export const Route = createFileRoute("/product/$slug")({
   head: ({ params }) => ({
@@ -174,7 +176,7 @@ function ProductDetailPage() {
               >
                 −
               </button>
-              <span aria-live="polite" className="w-10 text-center text-sm">
+              <span aria-live="polite" className="w-10 text-center text-sm font-bold">
                 {quantity}
               </span>
               <button
@@ -186,8 +188,36 @@ function ProductDetailPage() {
                 +
               </button>
             </div>
+
+            {/* Direct DM to Buy Button */}
+            <a
+              href={whatsappService.generateWhatsAppUrl(
+                whatsappService.buildDirectProductOrderMessage(
+                  {
+                    id: product.id,
+                    sku: product.sku,
+                    name: product.name,
+                    price: product.price,
+                    brand: product.brand,
+                    size: product.size,
+                    sport: product.sport,
+                  },
+                  quantity,
+                ),
+              )}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xs bg-whatsapp px-6 text-xs font-bold uppercase tracking-wider text-whatsapp-foreground shadow-md transition-all hover:brightness-110 active:scale-[0.98]"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>
+                DM TO BUY ({formatPrice(product.price * quantity)})
+              </span>
+            </a>
+
             <Button
               size="lg"
+              variant="outline"
               disabled={!available}
               onClick={() => {
                 addItem(product.id, quantity);
@@ -196,15 +226,16 @@ function ProductDetailPage() {
             >
               {available ? "Add to cart" : "Out of stock"}
             </Button>
+
             <Link to="/cart">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="ghost">
                 Go to cart
               </Button>
             </Link>
           </div>
           {added && (
-            <p role="status" className="mt-3 text-xs text-primary">
-              Added to your cart.
+            <p role="status" className="mt-3 text-xs text-primary font-semibold">
+              ✓ Added to your cart ({quantity} item{quantity > 1 ? "s" : ""}).
             </p>
           )}
           <p className="mt-4 text-xs text-muted-foreground">
