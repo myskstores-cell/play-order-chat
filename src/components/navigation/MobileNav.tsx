@@ -143,7 +143,7 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
           >
             <div className="flex items-center gap-2">
               <ShoppingBag className="h-4 w-4" />
-              <span>Enquiry List / Cart</span>
+              <span>Shopping Cart</span>
             </div>
             {itemCount > 0 && (
               <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">

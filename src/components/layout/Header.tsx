@@ -104,16 +104,16 @@ export function Header() {
             </a>
           )}
 
-          {/* ENQUIRY / CART (Storefront only) */}
+          {/* CART BUTTON (Storefront only) */}
           {!isAdminRoute && !isAuthRoute && (
             <Link
               to="/cart"
-              aria-label={`Enquiry list / Cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
+              aria-label={`Cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
               className="relative flex items-center gap-1.5 rounded-xs border border-border/80 bg-surface px-2.5 py-2 text-foreground transition-colors hover:border-primary/50 hover:text-primary sm:px-3"
             >
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               <span className="hidden text-xs font-bold uppercase tracking-wider md:inline">
-                Enquiry
+                Cart
               </span>
               {itemCount > 0 && (
                 <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground">

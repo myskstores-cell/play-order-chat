@@ -219,11 +219,13 @@ CREATE POLICY "Staff can manage product images"
 
 ### Admin Features
 
+- **Brand Management ("EQUIPMENT BRANDS")**: Dedicated Admin tab to add, edit, search, and delete official equipment brands (e.g. `SK Pro`, `SS`, `SG`, `Kookaburra`, `MRF`, `Yonex`, `Cosco`, `Nivia`, `Nike`, `Adidas`, `Puma`). Displays real-time catalog product counts for each brand.
+- **Managed Brand Selector in Product Form**: When adding/editing products, admins can 1-tap select from store brands or use quick brand chips, ensuring consistent brand metadata across all products.
+- **Percentage Offer Calculator (% OFF)**: Live discount calculator with quick presets (`10%`, `20%`, `25%`, `30%`, `50%`, `70%`), showing exact customer savings amount in rupees.
+- **Best Sellers & Quick-Slots ("POPULAR EQUIPMENT")**: Customizable 4-slot carousel with 1-tap product assignment and mobile touch cards.
+- **Kit Builder Admin ("Cricket & Sports Kits")**: Interactive bundle manager for creating customized matchday gear packages.
 - **Multi-Photo Upload (Up to 6 Photos)**: Upload up to 6 high-resolution product photos directly to Supabase Storage with instant previews, `#1 Primary` cover badge, set-as-primary button, and deletion controls.
-- **Product Gallery**: The customer-facing product detail page (`/product/$slug`) automatically displays an interactive photo gallery with thumbnail selection.
-- **Add & Edit Products**: Complete form with SKU generator, category selector, sale price, original compare price, size, sport, brand, and stock status.
-- **Delete Products / Categories**: Instant deletion with toast notifications.
-- **Category Management**: Reorder categories and manage sport banners.
+- **Direct WhatsApp Orders**: All product cards and cart checkouts format pre-filled WhatsApp messages with Product ID / SKU, Name, Quantity, Unit Price, and Total Cart Price for instant 1-tap DM orders.
 
 ---
 

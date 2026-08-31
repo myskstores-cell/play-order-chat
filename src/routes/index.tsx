@@ -10,7 +10,6 @@ import { ShopByNeed } from "@/components/home/ShopByNeed";
 import { DealsSection } from "@/components/home/DealsSection";
 import { ShopByBudget } from "@/components/home/ShopByBudget";
 import { NewArrivals } from "@/components/home/NewArrivals";
-import { ShopByBrand } from "@/components/home/ShopByBrand";
 import { KitBuilder } from "@/components/home/KitBuilder";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { WhatsAppCtaSection } from "@/components/home/WhatsAppCtaSection";
@@ -95,10 +94,7 @@ function HomePage() {
         isLoading={newArrivalsQuery.isLoading}
       />
 
-      {/* 11. SHOP BY BRAND */}
-      <ShopByBrand products={allProducts} />
-
-      {/* 12. BUILD YOUR KIT */}
+      {/* 11. BUILD YOUR KIT */}
       <KitBuilder products={allProducts} />
 
       {/* 13. WHY SK SPORT STORE */}

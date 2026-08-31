@@ -32,9 +32,9 @@ function CartPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Step 1 of 2"
-        title="Your cart"
-        description="Orders are completed on WhatsApp — no online payment."
+        eyebrow="WhatsApp Checkout"
+        title="Your Cart"
+        description="Review your items and tap DM To Buy on WhatsApp to confirm your order instantly with our store team."
       />
       <Container className="py-10">
         {loading ? (
@@ -113,14 +113,14 @@ function CartPage() {
               ))}
             </ul>
 
-            <aside className="surface-panel h-fit rounded-sm p-5">
-              <h2 className="display-title text-xl">Summary</h2>
-              <div className="mt-4 flex justify-between text-sm">
+            <aside className="surface-panel h-fit rounded-sm p-5 space-y-4">
+              <h2 className="display-title text-xl">Order Summary</h2>
+              <div className="flex justify-between text-sm border-b border-border/60 pb-3">
                 <span className="text-muted-foreground">Items ({cart.itemCount})</span>
-                <span className="font-bold">{formatPrice(cart.subtotal)}</span>
+                <span className="font-bold text-foreground">{formatPrice(cart.subtotal)}</span>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Delivery and final amount are confirmed by our team on WhatsApp.
+              <p className="text-xs text-muted-foreground">
+                Zero online payment required. Your order is confirmed directly by our team on WhatsApp.
               </p>
               <a
                 href={whatsappService.generateWhatsAppUrl(
@@ -128,19 +128,14 @@ function CartPage() {
                 )}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xs bg-whatsapp px-4 text-xs font-bold uppercase tracking-wider text-whatsapp-foreground shadow-md transition-all hover:brightness-110 active:scale-[0.99]"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xs bg-whatsapp px-4 text-xs font-bold uppercase tracking-wider text-whatsapp-foreground shadow-md transition-all hover:brightness-110 active:scale-[0.99]"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span>DM TO BUY ON WHATSAPP</span>
               </a>
 
-              <Link to="/checkout" className="mt-2.5 block">
-                <Button fullWidth size="lg" variant="outline">
-                  Enter Address Details First
-                </Button>
-              </Link>
-              <Button variant="ghost" size="sm" fullWidth className="mt-2" onClick={clearCart}>
-                Clear cart
+              <Button variant="ghost" size="sm" fullWidth onClick={clearCart}>
+                Clear Cart
               </Button>
             </aside>
           </div>

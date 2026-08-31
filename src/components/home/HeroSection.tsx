@@ -88,7 +88,7 @@ export function HeroSection() {
                   src="/images/hero.jpg"
                   alt="SK Sport Store Sports Gear"
                   loading="eager"
-                  className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
+                  className="h-full w-full object-cover object-[80%_15%] transition-transform duration-700 hover:scale-105"
                 />
 
                 {/* Athletic Gradient overlay */}

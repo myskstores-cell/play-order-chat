@@ -23,6 +23,7 @@ import {
   Package,
   Tag,
   Percent,
+  Award,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ import {
   DEFAULT_BEST_SELLERS_CONFIG,
   DEFAULT_KIT_PRESETS,
 } from "@/services/homepageSettingsService";
+import { brandService, useBrands, type BrandConfig } from "@/services/brandService";
 import type { CategoryRow, ProductRow } from "@/db/types";
 import { Button } from "@/components/common/Button";
 import { Input, Textarea } from "@/components/common/Input";
@@ -495,7 +497,7 @@ function AdminPage() {
 
 function AdminDashboard() {
   const [tab, setTab] = useState<
-    "products" | "categories" | "best_sellers" | "kit_builder" | "homepage"
+    "products" | "categories" | "brands" | "best_sellers" | "kit_builder" | "homepage"
   >("products");
 
   return (
@@ -504,7 +506,7 @@ function AdminDashboard() {
         <p className="eyebrow">Staff area</p>
         <h1 className="display-title mt-1 text-2xl sm:text-4xl">Catalog admin</h1>
         <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground">
-          Add, edit and remove products, categories, homepage best sellers and sport kit bundles. Changes appear on the
+          Add, edit and remove products, categories, brands, homepage best sellers and sport kit bundles. Changes appear on the
           storefront immediately.
         </p>
       </div>
@@ -513,6 +515,7 @@ function AdminDashboard() {
         {[
           { key: "products", label: "Products" },
           { key: "categories", label: "Categories" },
+          { key: "brands", label: "Brands" },
           { key: "best_sellers", label: 'Best Sellers ("POPULAR EQUIPMENT")' },
           { key: "kit_builder", label: 'Kit Builder ("Cricket & Sports Kits")' },
           { key: "homepage", label: 'Featured 3 Sports ("Choose Your Game")' },
@@ -522,7 +525,7 @@ function AdminDashboard() {
             type="button"
             onClick={() =>
               setTab(
-                key as "products" | "categories" | "best_sellers" | "kit_builder" | "homepage",
+                key as "products" | "categories" | "brands" | "best_sellers" | "kit_builder" | "homepage",
               )
             }
             className={`-mb-px border-b-2 px-3 py-2 text-xs sm:text-sm font-semibold uppercase tracking-wide whitespace-nowrap transition-colors rounded-t-xs ${
@@ -541,6 +544,8 @@ function AdminDashboard() {
           <ProductsPanel />
         ) : tab === "categories" ? (
           <CategoriesPanel />
+        ) : tab === "brands" ? (
+          <BrandsAdminPanel />
         ) : tab === "best_sellers" ? (
           <BestSellersAdminPanel />
         ) : tab === "kit_builder" ? (
@@ -941,6 +946,7 @@ function ProductForm({
   );
 
   const set = (patch: ProductInput) => setForm((f) => ({ ...f, ...patch }));
+  const managedBrands = useBrands();
 
   // Track percentage offer state
   const initialDiscount =
@@ -1224,11 +1230,75 @@ function ProductForm({
           />
         </div>
 
-        <Input
-          label="Brand"
-          value={form.brand ?? ""}
-          onChange={(e) => set({ brand: e.target.value })}
-        />
+        {/* Managed Brand Selector */}
+        <div className="sm:col-span-2 space-y-2 rounded-xs border border-border/80 bg-surface/50 p-3.5">
+          <div className="flex items-center justify-between">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Product Brand
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                const newBrandName = prompt("Enter new brand name to add to store list:");
+                if (newBrandName && newBrandName.trim()) {
+                  const created = brandService.addBrand({ name: newBrandName.trim() });
+                  set({ brand: created.name });
+                  toast.success(`Added "${created.name}" to store brands!`);
+                }
+              }}
+              className="text-[11px] text-primary hover:underline font-bold"
+            >
+              + Add New Brand
+            </button>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <select
+                className={selectClass}
+                value={form.brand ?? ""}
+                onChange={(e) => set({ brand: e.target.value })}
+              >
+                <option value="">-- Choose Brand from Store List --</option>
+                {managedBrands.map((b) => (
+                  <option key={b.id} value={b.name}>
+                    {b.name} {b.sport ? `(${b.sport})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Input
+                label="Or Type Brand Name"
+                placeholder="e.g. Custom Maker"
+                value={form.brand ?? ""}
+                onChange={(e) => set({ brand: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Quick Brand Select Chips */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
+              Quick Pick:
+            </span>
+            {managedBrands.slice(0, 9).map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => set({ brand: b.name })}
+                className={`rounded-2xs px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                  form.brand === b.name
+                    ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                    : "border border-border/70 bg-surface text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
+          </div>
+        </div>
         <Input
           label="Sport"
           value={form.sport ?? ""}
@@ -1674,15 +1744,295 @@ function CategoryForm({
         />
         Visible on the storefront (active)
       </label>
-      <div className="flex gap-2">
-        <Button type="submit" disabled={saving}>
+      <div className="flex flex-col-reverse sm:flex-row gap-2.5 pt-2">
+        <Button type="submit" disabled={saving} className="w-full sm:w-auto font-bold">
           {saving ? "Saving…" : "Save category"}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
           Cancel
         </Button>
       </div>
     </form>
+  );
+}
+
+/* ------------------------------- brands admin panel -------------------------------- */
+
+function BrandsAdminPanel() {
+  const productsQuery = useQuery({ queryKey: ["admin", "products"], queryFn: adminApi.products });
+  const products = productsQuery.data ?? [];
+
+  const brands = useBrands();
+  const [search, setSearch] = useState("");
+  const [editingBrand, setEditingBrand] = useState<BrandConfig | "new" | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formSport, setFormSport] = useState("");
+  const [formLogo, setFormLogo] = useState("");
+  const [formDesc, setFormDesc] = useState("");
+
+  // Real-time catalog product count for each brand
+  const brandProductCount = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const p of products) {
+      if (p.brand) {
+        const key = p.brand.trim().toLowerCase();
+        map.set(key, (map.get(key) ?? 0) + 1);
+      }
+    }
+    return (name: string) => map.get(name.trim().toLowerCase()) ?? 0;
+  }, [products]);
+
+  const filteredBrands = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return brands;
+    return brands.filter(
+      (b) =>
+        b.name.toLowerCase().includes(term) ||
+        (b.sport && b.sport.toLowerCase().includes(term)) ||
+        (b.description && b.description.toLowerCase().includes(term)),
+    );
+  }, [brands, search]);
+
+  function startEdit(b: BrandConfig | "new") {
+    setEditingBrand(b);
+    if (b === "new") {
+      setFormName("");
+      setFormSport("");
+      setFormLogo("");
+      setFormDesc("");
+    } else {
+      setFormName(b.name);
+      setFormSport(b.sport ?? "");
+      setFormLogo(b.logoUrl ?? "");
+      setFormDesc(b.description ?? "");
+    }
+  }
+
+  function handleSaveBrand(e: React.FormEvent) {
+    e.preventDefault();
+    if (!formName.trim()) {
+      toast.error("Brand name is required.");
+      return;
+    }
+
+    brandService.addBrand({
+      id: editingBrand !== "new" && editingBrand ? editingBrand.id : undefined,
+      name: formName.trim(),
+      sport: formSport.trim() || undefined,
+      logoUrl: formLogo.trim() || undefined,
+      description: formDesc.trim() || undefined,
+    });
+
+    toast.success(`Brand "${formName.trim()}" saved successfully!`);
+    setEditingBrand(null);
+  }
+
+  function handleDeleteBrand(b: BrandConfig) {
+    const count = brandProductCount(b.name);
+    if (
+      confirm(
+        `Delete brand "${b.name}"? ${
+          count > 0 ? `Note: ${count} product(s) in catalog currently use this brand.` : ""
+        }`,
+      )
+    ) {
+      brandService.deleteBrand(b.id);
+      toast.info(`Brand "${b.name}" removed from store list.`);
+    }
+  }
+
+  function handleResetDefaults() {
+    if (confirm("Reset store brands list to standard sports makers (SK Pro, SS, SG, Yonex, Nike, etc.)?")) {
+      brandService.resetDefaultBrands();
+      toast.success("Brands reset to defaults.");
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header Card */}
+      <div className="surface-panel rounded-sm p-5 sm:p-6 border border-border">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-border/60 pb-5">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+              <Award className="h-3.5 w-3.5 text-primary" />
+              <span>EQUIPMENT MAKERS & MANUFACTURERS</span>
+            </div>
+            <h2 className="display-title mt-1 text-2xl sm:text-3xl">
+              Brand Management ({brands.length} Brands)
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+              Manage sports brands stocked in your store. When adding products in the catalog, you can select from these managed brands with 1 click.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleResetDefaults} className="text-xs w-full sm:w-auto">
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              Reset Defaults
+            </Button>
+            <Button onClick={() => startEdit("new")} className="font-bold text-xs w-full sm:w-auto h-9">
+              <Plus className="mr-1.5 h-4 w-4" />
+              Add New Brand
+            </Button>
+          </div>
+        </div>
+
+        {/* Brand Search Bar */}
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            Showing <span className="text-foreground font-bold">{filteredBrands.length}</span> of {brands.length} brands
+          </p>
+
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search brands or sports…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xs border border-input bg-background pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Brand Edit / Create Form Modal */}
+      {editingBrand && (
+        <form onSubmit={handleSaveBrand} className="surface-panel rounded-sm p-5 sm:p-6 border-2 border-primary/60 space-y-4 shadow-xl animate-in fade-in duration-150">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Award className="h-4 w-4 text-primary" />
+              <h3 className="text-base font-bold text-foreground">
+                {editingBrand === "new" ? "Add New Brand" : `Edit Brand: ${editingBrand.name}`}
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditingBrand(null)}
+              className="p-1 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Input
+                label="Brand Name"
+                placeholder="e.g. Kookaburra, Yonex, SG, Nike"
+                required
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                label="Primary Sport / Category"
+                placeholder="e.g. Cricket, Badminton, Footwear"
+                value={formSport}
+                onChange={(e) => setFormSport(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Input
+                label="Brand Description (Optional)"
+                placeholder="Brief description of the brand or specialties..."
+                value={formDesc}
+                onChange={(e) => setFormDesc(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <ImageUpload
+                label="Brand Logo / Icon (Optional)"
+                value={formLogo}
+                onChange={(val) => setFormLogo(val)}
+                folder="brand-logos"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col-reverse sm:flex-row gap-2.5 pt-2 border-t border-border/60">
+            <Button type="submit" className="w-full sm:w-auto font-bold">
+              {editingBrand === "new" ? "Save Brand" : "Update Brand"}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setEditingBrand(null)} className="w-full sm:w-auto">
+              Cancel
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {/* Brands Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+        {filteredBrands.map((b) => {
+          const count = brandProductCount(b.name);
+          return (
+            <div
+              key={b.id}
+              className="surface-panel rounded-sm border border-border/80 p-4 flex flex-col justify-between space-y-3 hover:border-primary/40 transition-all shadow-sm group"
+            >
+              <div className="flex items-start gap-3">
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xs border border-border bg-surface-strong flex items-center justify-center text-primary group-hover:border-primary/50">
+                  {b.logoUrl ? (
+                    <img src={b.logoUrl} alt={b.name} className="h-full w-full object-contain p-1" />
+                  ) : (
+                    <Award className="h-6 w-6" />
+                  )}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                    {b.name}
+                  </h4>
+                  {b.sport && (
+                    <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                      {b.sport}
+                    </p>
+                  )}
+                  {b.description && (
+                    <p className="text-[10px] text-muted-foreground/80 line-clamp-1 mt-0.5">
+                      {b.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border/60 pt-2.5">
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-2xs font-bold ${
+                    count > 0
+                      ? "bg-primary/20 text-primary border border-primary/30"
+                      : "bg-surface text-muted-foreground border border-border/60"
+                  }`}
+                >
+                  {count} {count === 1 ? "Product" : "Products"} in Store
+                </span>
+
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => startEdit(b)}
+                    className="h-7 px-2 text-[11px]"
+                  >
+                    <Pencil className="h-3 w-3 mr-1" /> Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteBrand(b)}
+                    className="h-7 px-2 text-[11px] text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

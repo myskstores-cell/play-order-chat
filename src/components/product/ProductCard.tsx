@@ -1,31 +1,34 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { MessageCircle, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, Check, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import type { Product } from "@/models/Product";
 import { discountPercent } from "@/models/Product";
-import { formatPrice, stockLabel } from "@/lib/format";
-import { whatsappService } from "@/services/whatsappService";
+import { formatPrice } from "@/lib/format";
+import { useCart } from "@/hooks/useCart";
 
 export interface ProductCardProps {
   product: Product;
   showWhatsAppAction?: boolean;
 }
 
-export function ProductCard({ product, showWhatsAppAction = true }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
   const discount = discountPercent(product);
   const isInStock = product.stockStatus === "in_stock";
   const isLowStock = product.stockStatus === "low_stock";
   const isOutOfStock = product.stockStatus === "out_of_stock";
 
-  const waMessage = whatsappService.buildDirectProductOrderMessage({
-    id: product.id,
-    sku: product.sku,
-    name: product.name,
-    price: product.price,
-    brand: product.brand,
-    size: product.size,
-    sport: product.sport,
-  }, 1);
-  const waUrl = whatsappService.generateWhatsAppUrl(waMessage);
+  function handleAddToCart(e: React.MouseEvent) {
+    e.preventDefault();
+    if (isOutOfStock) return;
+    addItem(product.id, 1);
+    setAdded(true);
+    toast.success(`Added "${product.name}" to cart!`);
+    setTimeout(() => setAdded(false), 2000);
+  }
 
   return (
     <div className="surface-panel group relative flex flex-col overflow-hidden rounded-sm border border-border/80 bg-surface transition-all duration-200 hover:border-primary/60 hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
@@ -110,28 +113,43 @@ export function ProductCard({ product, showWhatsAppAction = true }: ProductCardP
         </div>
 
         {/* Action Buttons */}
-        {showWhatsAppAction && (
-          <div className="mt-4 flex flex-col gap-2 pt-1">
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-xs bg-whatsapp px-3 text-xs font-bold uppercase tracking-wider text-whatsapp-foreground transition-all duration-150 hover:brightness-110 active:scale-[0.98]"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              <span>Order on WhatsApp</span>
-            </a>
+        <div className="mt-4 flex flex-col gap-2 pt-1">
+          <button
+            type="button"
+            disabled={isOutOfStock}
+            onClick={handleAddToCart}
+            className={`inline-flex h-9 w-full items-center justify-center gap-2 rounded-xs px-3 text-xs font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.98] ${
+              isOutOfStock
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : added
+                ? "bg-emerald-500 text-black shadow-sm font-black"
+                : "bg-primary text-primary-foreground hover:brightness-110 shadow-sm"
+            }`}
+          >
+            {added ? (
+              <>
+                <Check className="h-3.5 w-3.5 stroke-[3]" />
+                <span>Added to Cart!</span>
+              </>
+            ) : isOutOfStock ? (
+              <span>Out of Stock</span>
+            ) : (
+              <>
+                <ShoppingCart className="h-3.5 w-3.5" />
+                <span>Add to Cart</span>
+              </>
+            )}
+          </button>
 
-            <Link
-              to="/product/$slug"
-              params={{ slug: product.slug }}
-              className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-xs border border-border/80 bg-surface-strong/60 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:border-primary/40 hover:bg-surface-strong hover:text-foreground"
-            >
-              <span>View Product</span>
-              <ArrowUpRight className="h-3 w-3" />
-            </Link>
-          </div>
-        )}
+          <Link
+            to="/product/$slug"
+            params={{ slug: product.slug }}
+            className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-xs border border-border/80 bg-surface-strong/60 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:border-primary/40 hover:bg-surface-strong hover:text-foreground"
+          >
+            <span>View Details</span>
+            <ArrowUpRight className="h-3 w-3" />
+          </Link>
+        </div>
       </div>
     </div>
   );
